@@ -9,6 +9,7 @@ services:
     volumes:
       - ./api:/usr/src/app  # Mount the host api directory to the container's working directory
       - cargo-cache:/usr/local/cargo/registry  # Cache the cargo registry
+      - cargo-target:/usr/src/app/target
     links:
       - database
   database:
@@ -26,5 +27,6 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
 
 volumes:
+  cargo-target: {}
   pgdata: {}
   cargo-cache: {}

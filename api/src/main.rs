@@ -2,7 +2,7 @@
 
 #[get("/hello/<name>/<age>")]
 fn hello(name: &str, age: u8) -> String {
-    format!("Hello, {} year oldasdasd aSDA d as dasdasdas named {}!", age, name)
+    format!("Hello, {} year d dskjgnfjkgnfjkdgjn named {}!", age, name)
 }
 
 #[launch]
