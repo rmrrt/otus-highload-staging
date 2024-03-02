@@ -2,13 +2,13 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UserCraeationRequest {
-    first_name: String,
-    last_name: String,
+    pub first_name: String,
+    pub last_name: String,
 }
 
 pub struct User {
-    first_name: String,
-    last_name: String
+    pub first_name: String,
+    pub last_name: String
 }
