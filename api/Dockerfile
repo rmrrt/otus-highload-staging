@@ -1,11 +1,17 @@
-FROM rustlang/rust:nightly
+# Use the official Rust image as a parent image
+FROM rust:latest
 
-RUN cargo install diesel_cli --no-default-features --features postgres
-
-RUN cargo install cargo-watch
-
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-EXPOSE 8000
+# Copy the current directory contents into the container at /usr/src/app
+COPY ./ .
 
-VOLUME ["/usr/local/cargo"]
+# Install cargo-watch
+RUN cargo install cargo-watch
+
+# Build your program for release
+RUN cargo build --release
+
+# Use cargo watch to run the application
+CMD ["cargo", "watch", "-w", "/usr/src/app", "-x", "run", "--poll"]

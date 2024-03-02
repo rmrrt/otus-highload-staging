@@ -1,3 +1,4 @@
 fn main() {
-    println!("Hello test!");
+    println!("Aolaosdlasd!");
+    println!("Another line");
 }
