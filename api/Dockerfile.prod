@@ -1,0 +1,17 @@
+# Use the official Rust image as a parent image
+FROM rust:latest
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy the current directory contents into the container at /usr/src/app
+COPY ./ .
+
+# Build your program for release
+RUN cargo build --release -v
+
+# List the contents of the target/release directory (for debugging)
+RUN ls -alh /usr/src/app/
+
+# The command to run when the container starts
+CMD ["./target/release/api"]
