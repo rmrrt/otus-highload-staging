@@ -26,3 +26,7 @@ To build and run the release version of the container:
 docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up
 ```
+
+<h3>ACCESS DB</h3>
+
+docker exec -it otus-highload-db psql -U user -d otus_highload
