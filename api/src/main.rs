@@ -4,16 +4,13 @@ use models::{UserCreationRequest, UserLoginRequest};
 use rocket::serde::json::Json;
 use rocket::http::Status;
 use rocket::response::status;
-
-use diesel::prelude::*;
-use diesel::pg::PgConnection;
-use diesel::sql_query;
-use diesel::RunQueryDsl;
-
-use rocket_sync_db_pools::{database,diesel};
-
-#[database("otus_highload")]
-struct Db(diesel::PgConnection);
+use bb8::Pool;
+use bb8_postgres::PostgresConnectionManager;
+use tokio_postgres::NoTls;
+type PostgresPool = Pool<PostgresConnectionManager<NoTls>>;
+use rocket::State;
+use std::env;
+use std::error::Error;
 
 
 #[get("/user/get/<id>")]
@@ -32,15 +29,20 @@ fn login(login_request: Json<UserLoginRequest>) -> Result<Json<UserLoginRequest>
 }
 
 #[post("/user/register", format = "json", data = "<user_request>")]
-fn register(user_request: Json<UserCreationRequest>) -> Result<Json<UserCreationRequest>, status::Custom<String>> {
+async fn register(pool: &State<PostgresPool>, user_request: Json<UserCreationRequest>) -> Result<Json<UserCreationRequest>, status::Custom<String>> {
+    let conn = pool.get().await.map_err(|_| status::Custom(Status::InternalServerError, "Failed to get DB connection".to_string()))?;
+    conn.execute("INSERT INTO users (first_name, last_name) VALUES ($1, $2)", &[&user_request.first_name, &user_request.last_name]).await.map_err(|_| status::Custom(Status::InternalServerError, "Failed to insert user".to_string()))?;
 
-    println!("Received request: {:?}", user_request);
+    Ok(user_request)
+}
 
-    if user_request.first_name.is_empty() { 
-        Err(status::Custom(Status::BadRequest, "Username is required".to_string()))
-    } else {
-        Ok(user_request)
-    }
+async fn init_db_pool() -> Result<PostgresPool, Box<dyn Error>> {
+    let database_url = env::var("DATABASE_URL").map_err(|e| Box::new(e) as Box<dyn Error>)?;
+    let manager = PostgresConnectionManager::new_from_stringlike(
+        database_url,
+        NoTls,
+    ).map_err(|e| Box::new(e) as Box<dyn Error>)?;
+    Pool::builder().build(manager).await.map_err(|e| Box::new(e) as Box<dyn Error>)
 }
 
 fn ensure_table_exists(conn: &mut PgConnection) {
@@ -56,13 +58,11 @@ fn ensure_table_exists(conn: &mut PgConnection) {
 }
 
 #[launch]
-fn rocket() -> _ {
+async fn rocket() -> _ {
 
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let mut conn = PgConnection::establish(&database_url).expect("Error connecting to database");
-    ensure_table_exists(&mut conn);
+    let pool = init_db_pool().await.expect("database pool");
 
     rocket::build()
-    .attach(Db::fairing())
     .mount("/", routes![get_user, login, register])
+    .manage(pool)
 }
