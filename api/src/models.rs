@@ -19,3 +19,9 @@ pub struct UserLoginRequest {
     pub password_hash: String
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UserCreationResponse {
+    pub status: String,
+    pub message: String
+}
+
