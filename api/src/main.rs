@@ -1,10 +1,14 @@
 #[macro_use] extern crate rocket;
 mod models;
-
 use models::{UserCreationRequest, UserLoginRequest};
 use rocket::serde::json::Json;
 use rocket::http::Status;
 use rocket::response::status;
+
+use diesel::prelude::*;
+use diesel::pg::PgConnection;
+use diesel::sql_query;
+use diesel::RunQueryDsl;
 
 use rocket_sync_db_pools::{database,diesel};
 
@@ -39,8 +43,25 @@ fn register(user_request: Json<UserCreationRequest>) -> Result<Json<UserCreation
     }
 }
 
+fn ensure_table_exists(conn: &mut PgConnection) {
+    sql_query("CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        first_name VARCHAR NOT NULL,
+        last_name VARCHAR NOT NULL,
+        birth_date DATE NOT NULL,
+        sex VARCHAR NOT NULL,
+        interests TEXT,
+        city VARCHAR NOT NULL
+    )").execute(conn).expect("Error creating users table");
+}
+
 #[launch]
 fn rocket() -> _ {
+
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let mut conn = PgConnection::establish(&database_url).expect("Error connecting to database");
+    ensure_table_exists(&mut conn);
+
     rocket::build()
     .attach(Db::fairing())
     .mount("/", routes![get_user, login, register])
