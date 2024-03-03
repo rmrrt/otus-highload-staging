@@ -1,9 +1,16 @@
 #[macro_use] extern crate rocket;
 mod models;
+
 use models::{UserCreationRequest, UserLoginRequest};
 use rocket::serde::json::Json;
 use rocket::http::Status;
 use rocket::response::status;
+
+use rocket_sync_db_pools::{database,diesel};
+
+#[database("otus_highload")]
+struct Db(diesel::PgConnection);
+
 
 #[get("/user/get/<id>")]
 fn get_user(id: &str) -> String {
@@ -34,5 +41,7 @@ fn register(user_request: Json<UserCreationRequest>) -> Result<Json<UserCreation
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![get_user, login, register])
+    rocket::build()
+    .attach(Db::fairing())
+    .mount("/", routes![get_user, login, register])
 }

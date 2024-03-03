@@ -2,8 +2,6 @@
 FROM rust:latest
 
 # Set env variables
-ENV ROCKET_ADDRESS=0.0.0.0
-ENV CARGO_BUILD_JOBS=4
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
