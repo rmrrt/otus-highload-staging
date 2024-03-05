@@ -3,6 +3,7 @@ mod models;
 mod utils;
 mod create_user;
 mod crypt_helper;
+mod get_user_by_id;
 
 use create_user::create_user;
 
@@ -17,6 +18,9 @@ use rocket::response::status;
 use rocket::State;
 use std::env;
 use std::error::Error;
+use rocket::http::hyper::body::HttpBody;
+use crate::models::{GenericErrorResponse, UserGetByIdResponse};
+use crate::get_user_by_id::get_user_by_id;
 
 #[get("/health")]
 fn health() -> Json<HealthResponse> {
@@ -26,8 +30,9 @@ fn health() -> Json<HealthResponse> {
     Json(response)
 }
 #[get("/user/get/<id>")]
-fn get_user(id: &str) -> String {
-    format!("Hello, user id {}", id)
+async fn get_user(pool: &State<PostgresPool>, id: i32) -> Result<Json<UserGetByIdResponse>, status::Custom<Json<GenericErrorResponse>>> {
+    let response = get_user_by_id(&pool, &id).await.expect("Something wrong");
+    Ok(Json(response))
 }
 
 #[post("/login", format = "json", data = "<login_request>")]
@@ -82,18 +87,6 @@ async fn ensure_table_exists(pool: &PostgresPool) -> Result<Json<HealthResponse>
         }
     }
 }
-
-// fn ensure_table_exists(conn: &mut PgConnection) {
-//     sql_query("CREATE TABLE IF NOT EXISTS users (
-//         id SERIAL PRIMARY KEY,
-//         first_name VARCHAR NOT NULL,
-//         last_name VARCHAR NOT NULL,
-//         birth_date DATE NOT NULL,
-//         sex VARCHAR NOT NULL,
-//         interests TEXT,
-//         city VARCHAR NOT NULL
-//     )").execute(conn).expect("Error creating users table");
-// }
 
 #[launch]
 async fn rocket() -> _ {
