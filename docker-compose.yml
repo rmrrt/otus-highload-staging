@@ -20,8 +20,8 @@ services:
     image: postgres:15
     container_name: otus-highload-db
     hostname: otus-highload-db
-    expose: 
-      - 5432
+    ports:
+      - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data/pgdata
     environment:

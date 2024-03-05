@@ -22,10 +22,10 @@ pub async fn create_user(
         status::Custom(Status::InternalServerError, Json(error_response))
     })?;
 
-    let formatted_birth_date = parse_date(&user_request.birth_date);
+    let formatted_birth_date = parse_date(&user_request.birthday);
 
     match conn.execute(
-        "INSERT INTO users (first_name, last_name, birth_date, sex, interests, city, user_email) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+        "INSERT INTO users (first_name, last_name, birth_date, sex, interests, city, email) VALUES ($1, $2, $3, $4, $5, $6, $7)",
         &[
             &user_request.first_name,
             &user_request.last_name,
@@ -33,7 +33,7 @@ pub async fn create_user(
             &user_request.sex,
             &user_request.interests,
             &user_request.city,
-            &user_request.user_email,
+            &user_request.email,
         ],
     ).await {
         Ok(_) => {
