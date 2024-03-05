@@ -2,6 +2,8 @@
 mod models;
 mod utils;
 mod create_user;
+mod crypt_helper;
+
 use create_user::create_user;
 
 use bb8::Pool;
@@ -60,9 +62,9 @@ async fn ensure_table_exists(pool: &PostgresPool) -> Result<Json<HealthResponse>
         };
         status::Custom(Status::InternalServerError, Json(error_response))
     })?;
-
+    println!("TEST!");
     match conn.execute(
-        "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, first_name VARCHAR NOT NULL, last_name VARCHAR NOT NULL, birthday VARCHAR NOT NULL, city VARCHAR NOT NULL, interests VARCHAR NOT NULL, sex VARCHAR NOT NULL, email VARCHAR NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, first_name VARCHAR NOT NULL, last_name VARCHAR NOT NULL, email VARCHAR NOT NULL, password VARCHAR NOT NULL, birthday VARCHAR NOT NULL, city VARCHAR NOT NULL, interests VARCHAR NOT NULL, sex VARCHAR NOT NULL)",
         &[]
     ).await {
         Ok(_) => {

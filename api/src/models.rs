@@ -7,6 +7,7 @@ pub struct UserCreationRequest {
     pub first_name: String,
     pub last_name: String,
     pub email: String,
+    pub password: String,
     pub birthday: String,
     pub sex: String,
     pub interests: String,
