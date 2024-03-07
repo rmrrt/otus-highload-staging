@@ -16,4 +16,4 @@ bb8-postgres = "0.7"
 tokio-postgres = "0.7"
 chrono = "0.4"
 bcrypt = "0.11.0"
-
+sqlx = { version = "0.7", features = [ "runtime-tokio", "postgres" ] }
