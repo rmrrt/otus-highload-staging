@@ -15,13 +15,11 @@ use rocket::http::Status;
 use rocket::response::status;
 use rocket::State;
 use std::env;
-use std::error::Error;
-use rocket::http::hyper::body::HttpBody;
 
 use crate::models::{GenericErrorResponse, UserGetByIdResponse};
 use crate::get_user_by_id::get_user_by_id;
 
-use sqlx::postgres::{PgPool, Postgres};
+use sqlx::postgres::{PgPool};
 #[get("/health")]
 fn health() -> Json<HealthResponse> {
     let response = HealthResponse {
@@ -48,10 +46,10 @@ fn login(login_request: Json<UserLoginRequest>) -> Result<Json<UserLoginRequest>
 }
 
 #[post("/user/register", format = "json", data = "<user_request>")]
-async fn register(pool: &State<PgPool>, user_request: Json<UserCreationRequest>) -> Result<Json<UserCreationResponse>, status::Custom<String>> {
+async fn register(pool: &State<PgPool>, user_request: Json<UserCreationRequest>) -> Result<Json<UserCreationResponse>, status::Custom<Json<UserCreationResponse>>> {
     match create_user::create_user(&pool, user_request).await {
         Ok(response) => Ok(response),
-        Err(e) => Err(status::Custom(Status::InternalServerError, format!("TEST"))),
+        Err(e) => Err(e),
     }
 }
 

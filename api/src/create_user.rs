@@ -6,7 +6,7 @@ use rocket::http::Status;
 use rocket::State;
 use rocket::response::status;
 use rocket::serde::json::Json;
-use sqlx::{PgPool, Postgres};
+use sqlx::{PgPool};
 
 #[post("/create_user", format = "json", data = "<user_request>")]
 pub async fn create_user(pool: &State<PgPool>, user_request: Json<UserCreationRequest>) -> Result<Json<UserCreationResponse>, status::Custom<Json<UserCreationResponse>>> {
