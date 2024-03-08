@@ -21,6 +21,25 @@ pub async fn create_user(pool: &State<PgPool>, user_request: Json<UserCreationRe
         },
     };
 
+    let user_exists = sqlx::query("SELECT id from users WHERE email = $1")
+        .bind(&user_request.email)
+        .fetch_one(pool.inner())
+        .await;
+
+    match user_exists {
+        Ok(user) => {
+            let error_response = UserCreationResponse {
+                status: "Error".to_string(),
+                message: "User already exists".to_string()
+            };
+            return Err(status::Custom(Status::Conflict, Json(error_response)))
+        }
+        Err(_) => {
+            println!("The user doesn't exist, we can create one.")
+        }
+    }
+
+
     let formatted_birth_date = parse_date(&user_request.birthday);
     let password_hash = match hash_password(&user_request.password) {
         Ok(hash) => hash,
