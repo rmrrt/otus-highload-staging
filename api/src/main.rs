@@ -1,6 +1,5 @@
 #[macro_use] extern crate rocket;
 mod models;
-mod utils;
 mod create_user;
 mod crypt_helper;
 mod get_user_by_id;
@@ -10,7 +9,7 @@ mod login_user;
 use database_error::DatabaseError;
 
 use sqlx::postgres::PgPoolOptions;
-use rocket_cors::{AllowedOrigins, Cors, CorsOptions};
+use rocket_cors::{AllowedOrigins, CorsOptions};
 
 use models::{UserCreationRequest, UserCreationResponse, UserLoginRequest, HealthResponse};
 use rocket::serde::json::Json;
@@ -23,7 +22,7 @@ use crate::models::{GenericErrorResponse, UserGetByIdResponse, UserLoginResponse
 use crate::get_user_by_id::get_user_by_id;
 
 use sqlx::postgres::{PgPool};
-use tokio_postgres::types::ToSql;
+
 use crate::login_user::login_user;
 
 #[get("/health")]

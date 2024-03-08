@@ -1,5 +1,4 @@
 use super::models::{UserCreationRequest, UserCreationResponse};
-use super::utils::parse_date;
 use super::crypt_helper::hash_password;
 
 use rocket::http::Status;
@@ -7,7 +6,6 @@ use rocket::State;
 use rocket::response::status;
 use rocket::serde::json::Json;
 use sqlx::{PgPool};
-use chrono::NaiveDate;
 
 #[post("/create_user", format = "json", data = "<user_request>")]
 pub async fn create_user(pool: &State<PgPool>, user_request: Json<UserCreationRequest>) -> Result<Json<UserCreationResponse>, status::Custom<Json<UserCreationResponse>>> {
@@ -28,7 +26,7 @@ pub async fn create_user(pool: &State<PgPool>, user_request: Json<UserCreationRe
         .await;
 
     match user_exists {
-        Ok(user) => {
+        Ok(_) => {
             let error_response = UserCreationResponse {
                 status: "Error".to_string(),
                 message: "User already exists".to_string()

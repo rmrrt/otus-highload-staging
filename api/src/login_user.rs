@@ -1,4 +1,3 @@
-use std::future::Future;
 use rocket::{State, http::Status, response::status};
 use crate::models::{UserLoginRequest, UserLoginResponse, UserPasswordCheck};
 use rocket::serde::{json::Json};

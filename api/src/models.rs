@@ -1,5 +1,3 @@
-use chrono::{DateTime, NaiveDate};
-// src/models.rs
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 #[derive(Serialize, Deserialize, Debug)]
