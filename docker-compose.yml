@@ -1,8 +1,10 @@
-version: '3'
+version: '3.9'
 
 services:
   api:
-    build: ./api
+    build:
+      context: ./api
+      network: host
     container_name: otus-highload-api
     ports:
       - 8000:8000
@@ -29,6 +31,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
       PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", 'psql -h 0.0.0.0 -p 5432 -U user -d otus_highload -c "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, first_name VARCHAR NOT NULL, last_name VARCHAR NOT NULL, email VARCHAR NOT NULL, password VARCHAR NOT NULL, birthday VARCHAR NOT NULL, city VARCHAR NOT NULL, interests VARCHAR NOT NULL, sex VARCHAR NOT NULL)']
 
 volumes:
   cargo-target: {}

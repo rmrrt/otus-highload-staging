@@ -5,7 +5,7 @@ use crate::models::{GenericErrorResponse, UserGetByIdResponse};
 
 pub async fn get_user_by_id(
     pool: &State<PgPool>,
-    id: &i32 // Changed from reference to value since it's more idiomatic here
+    id: &i32
 ) -> Result<Json<UserGetByIdResponse>, status::Custom<Json<GenericErrorResponse>>> {
     let result = sqlx::query_as!(
         UserGetByIdResponse,

@@ -30,3 +30,8 @@ docker compose -f docker-compose.prod.yml up
 <h3>ACCESS DB</h3>
 
 docker exec -it otus-highload-db psql -U user -d otus_highload
+
+
+PREPARE DB
+
+cargo sqlx prepare -D postgresql://user:password@localhost:5432/otus_highload
