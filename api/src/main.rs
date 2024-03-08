@@ -10,6 +10,7 @@ mod login_user;
 use database_error::DatabaseError;
 
 use sqlx::postgres::PgPoolOptions;
+use rocket_cors::{AllowedOrigins, Cors, CorsOptions};
 
 use models::{UserCreationRequest, UserCreationResponse, UserLoginRequest, HealthResponse};
 use rocket::serde::json::Json;
@@ -97,12 +98,15 @@ async fn rocket() -> _ {
 
     let database_url = env::var("DATABASE_URL").unwrap().to_string();
     let pool = PgPoolOptions::new()
-        .max_connections(5)
+        .max_connections(50)
         .connect(&database_url).await.expect("Could not connect to DB");
 
     ensure_table_exists(&pool).await.expect("Could not create table");
 
+    let cors = CorsOptions::default().allowed_origins(AllowedOrigins::all());
+
     rocket::build()
     .mount("/", routes![health, register, login, get_user])
     .manage(pool)
+        .attach(cors.to_cors().unwrap())
 }
