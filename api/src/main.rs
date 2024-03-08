@@ -5,6 +5,8 @@ mod create_user;
 mod crypt_helper;
 mod get_user_by_id;
 mod database_error;
+mod login_user;
+
 use database_error::DatabaseError;
 
 use sqlx::postgres::PgPoolOptions;
@@ -16,10 +18,13 @@ use rocket::response::status;
 use rocket::State;
 use std::env;
 
-use crate::models::{GenericErrorResponse, UserGetByIdResponse};
+use crate::models::{GenericErrorResponse, UserGetByIdResponse, UserLoginResponse};
 use crate::get_user_by_id::get_user_by_id;
 
 use sqlx::postgres::{PgPool};
+use tokio_postgres::types::ToSql;
+use crate::login_user::login_user;
+
 #[get("/health")]
 fn health() -> Json<HealthResponse> {
     let response = HealthResponse {
@@ -36,12 +41,20 @@ async fn get_user(pool: &State<PgPool>, id: i32) -> Result<Json<UserGetByIdRespo
 }
 
 #[post("/login", format = "json", data = "<login_request>")]
-fn login(login_request: Json<UserLoginRequest>) -> Result<Json<UserLoginRequest>, status:: Custom<String>> {
-    println!("Received request {:?}", login_request);
-    if login_request.password_hash.is_empty() {
-        Err(status::Custom(Status::BadRequest, "Password is required".to_string()))
+async fn login(pool: &State<PgPool>, login_request: Json<UserLoginRequest>) -> Result<Json<UserLoginResponse>, status::Custom<Json<UserLoginResponse>>> {
+    if login_request.password.is_empty() || login_request.email.is_empty() {
+        let error_response = UserLoginResponse {
+            id: 0,
+            verified: false,
+            login_time_stamp: "".to_string(),
+            message: "User email and password are required".to_string()
+        };
+        Err(status::Custom(Status::BadRequest, Json(error_response)))
     } else {
-        Ok(login_request)
+        match login_user(&pool, &login_request).await {
+            Ok(response) => Ok(response),
+            Err(e) => Err(e)
+        }
     }
 }
 

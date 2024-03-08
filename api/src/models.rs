@@ -17,7 +17,7 @@ pub struct UserCreationRequest {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserLoginRequest {
     pub email: String,
-    pub password_hash: String
+    pub password: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -42,10 +42,16 @@ pub struct UserGetByIdResponse {
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserLoginResponse {
-    pub email: String,
-    pub password_hash: String,
+    pub id: i32,
     pub verified: bool,
-    pub login_time_stamp: String
+    pub login_time_stamp: String,
+    pub message: String
+}
+#[derive(Serialize, Deserialize, FromRow, Debug)]
+pub struct UserPasswordCheck {
+    pub id: i32,
+    pub email: String,
+    pub password: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
