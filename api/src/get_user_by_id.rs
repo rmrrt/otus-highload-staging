@@ -8,7 +8,7 @@ pub async fn get_user_by_id(
     id: &i32
 ) -> Result<Json<UserGetByIdResponse>, status::Custom<Json<GenericErrorResponse>>> {
     let result = sqlx::query_as::<_, UserGetByIdResponse>(
-        "SELECT id, first_name, last_name, email, birthday, sex, interests, city FROM users WHERE id = $1"
+        "SELECT id, first_name, last_name, email, birthday::text, sex, interests, city FROM users WHERE id = $1"
     )
         .bind(id)
         .fetch_one(pool.inner())

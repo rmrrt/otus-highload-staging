@@ -67,7 +67,7 @@ async fn ensure_table_exists(pool: &PgPool) -> Result<(), DatabaseError> {
         last_name VARCHAR NOT NULL,
         email VARCHAR NOT NULL,
         password VARCHAR NOT NULL,
-        birthday VARCHAR NOT NULL,
+        birthday DATE NOT NULL,
         city VARCHAR NOT NULL,
         interests VARCHAR NOT NULL,
         sex VARCHAR NOT NULL)")
@@ -86,7 +86,6 @@ async fn rocket() -> _ {
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url).await.expect("Could not connect to DB");
-
 
     ensure_table_exists(&pool).await.expect("Could not create table");
 
