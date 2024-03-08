@@ -7,11 +7,10 @@ pub async fn get_user_by_id(
     pool: &State<PgPool>,
     id: &i32
 ) -> Result<Json<UserGetByIdResponse>, status::Custom<Json<GenericErrorResponse>>> {
-    let result = sqlx::query_as!(
-        UserGetByIdResponse,
-        "SELECT id, first_name, last_name, email, birthday, sex, interests, city FROM users WHERE id = $1",
-        &id
+    let result = sqlx::query_as::<_, UserGetByIdResponse>(
+        "SELECT id, first_name, last_name, email, birthday, sex, interests, city FROM users WHERE id = $1"
     )
+        .bind(id)
         .fetch_one(pool.inner())
         .await;
 

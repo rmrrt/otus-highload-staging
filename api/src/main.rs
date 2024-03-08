@@ -83,7 +83,6 @@ async fn ensure_table_exists(pool: &PgPool) -> Result<(), DatabaseError> {
 async fn rocket() -> _ {
 
     let database_url = env::var("DATABASE_URL").unwrap().to_string();
-
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url).await.expect("Could not connect to DB");

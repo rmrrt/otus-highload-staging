@@ -1,6 +1,6 @@
 // src/models.rs
 use serde::{Deserialize, Serialize};
-
+use sqlx::FromRow;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserCreationRequest {
     pub first_name: String,
@@ -28,7 +28,7 @@ pub struct GenericErrorResponse {
     pub error: String
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct UserGetByIdResponse {
     pub id: i32,
     pub first_name: String,
