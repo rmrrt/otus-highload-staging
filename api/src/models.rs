@@ -42,7 +42,7 @@ pub struct UserGetByIdResponse {
 pub struct UserLoginResponse {
     pub id: i32,
     pub verified: bool,
-    pub login_time_stamp: String,
+    pub login_time_stamp: u64,
     pub message: String
 }
 #[derive(Serialize, Deserialize, FromRow, Debug)]

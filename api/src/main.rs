@@ -6,6 +6,8 @@ mod get_user_by_id;
 mod database_error;
 mod login_user;
 
+mod utils;
+
 use database_error::DatabaseError;
 
 use sqlx::postgres::PgPoolOptions;
@@ -24,6 +26,7 @@ use crate::get_user_by_id::get_user_by_id;
 use sqlx::postgres::{PgPool};
 
 use crate::login_user::login_user;
+use utils::get_current_time;
 
 #[get("/health")]
 fn health() -> Json<HealthResponse> {
@@ -46,7 +49,7 @@ async fn login(pool: &State<PgPool>, login_request: Json<UserLoginRequest>) -> R
         let error_response = UserLoginResponse {
             id: 0,
             verified: false,
-            login_time_stamp: "".to_string(),
+            login_time_stamp: get_current_time(),
             message: "User email and password are required".to_string()
         };
         Err(status::Custom(Status::BadRequest, Json(error_response)))
@@ -103,6 +106,8 @@ async fn rocket() -> _ {
     ensure_table_exists(&pool).await.expect("Could not create table");
 
     let cors = CorsOptions::default().allowed_origins(AllowedOrigins::all());
+
+    println!("Starting server");
 
     rocket::build()
     .mount("/", routes![health, register, login, get_user])

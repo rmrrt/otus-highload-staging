@@ -3,6 +3,7 @@ use crate::models::{UserLoginRequest, UserLoginResponse, UserPasswordCheck};
 use rocket::serde::{json::Json};
 use sqlx::PgPool;
 use crate::crypt_helper::verify_password;
+use crate::utils::get_current_time;
 
 pub async fn login_user(pool: &State<PgPool>, login_request: &UserLoginRequest) -> Result<Json<UserLoginResponse>, status::Custom<Json<UserLoginResponse>>> {
     let user = sqlx::query_as::<_,UserPasswordCheck>("SELECT id, email, password from users where email = $1")
@@ -12,7 +13,7 @@ pub async fn login_user(pool: &State<PgPool>, login_request: &UserLoginRequest) 
 
     let mut error_response = UserLoginResponse {
         id: 0,
-        login_time_stamp: "".to_string(),
+        login_time_stamp: get_current_time(),
         verified: false,
         message: "".to_string()
     };
@@ -24,7 +25,7 @@ pub async fn login_user(pool: &State<PgPool>, login_request: &UserLoginRequest) 
             if verified {
                 let response = UserLoginResponse {
                     id: user_password_check.id,
-                    login_time_stamp: "1234565765756".to_string(),
+                    login_time_stamp: get_current_time(),
                     verified: true,
                     message: "".to_string()
                 };
