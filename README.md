@@ -8,7 +8,7 @@ Simple user authentication app in Rust.
 
 We're using cargo watch with mirroring files you have locally to the container on debug. So changes that you make locally appear in the running container. 
 
-In order to start the container, run the following commands:
+In order to start the container, run the following command:
 
 ```
 docker compose up --build
