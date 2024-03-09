@@ -6,6 +6,12 @@ services:
       context: ./api
       dockerfile: Dockerfile.prod
     container_name: otus-highload-api
+    volumes:
+      - ./api:/usr/src/app
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - ROCKET_DATABASES=${ROCKET_DATABASES}
+      - ROCKET_ADDRESS=${ROCKET_ADDRESS}
     ports:
       - "8000:8000"
 
@@ -19,9 +25,9 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data/pgdata
     environment:
-      POSTGRES_PASSWORD: agoodpassword
-      POSTGRES_USER: userdb
-      POSTGRES_DB: rocketdb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
       PGDATA: /var/lib/postgresql/data/pgdata
 
 volumes:
